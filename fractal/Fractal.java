@@ -390,19 +390,30 @@ while (true)
 
                 // mandelbrot set.
 
+		System.out.println("mandelbrot, CR_classic");
                 mandelbrot(gfx, 1000, 600, 600, new CR_classic()); repaint(); sleep(1000);
+		System.out.println("mandelbrot, CR_classic_inverse");
                 mandelbrot(gfx, 1000, 600, 600, new CR_classic_inverse()); repaint(); sleep(1000);
-                mandelbrot(gfx, 1000, 6600, 600, new CR_classic_RGB()); repaint(); sleep(1000);
+		System.out.println("mandelbrot, CR_classic_RGB");
+                mandelbrot(gfx, 1000, 600, 600, new CR_classic_RGB()); repaint(); sleep(1000);
+		System.out.println("mandelbrot, CR_classic_RGB_inverse");
                 mandelbrot(gfx, 1000, 600, 600, new CR_classic_RGB_inverse());repaint();  sleep(1000);
+		System.out.println("mandelbrot, CR_classic_redscale");
                 mandelbrot(gfx, 1000, 600, 600, new CR_classic_redscale()); repaint(); sleep(1000);
+		System.out.println("mandelbrot, CR_classic_redscale_square");
                 mandelbrot(gfx, 1000, 600, 600, new CR_classic_redscale_square()); repaint(); sleep(1000);
+		System.out.println("mandelbrot, CR_classic_redscale_log");
                 mandelbrot(gfx, 1000, 600, 600, new CR_classic_redscale_log()); repaint(); sleep(1000);
+		System.out.println("mandelbrot, CR_classic_bluescale_square");
                 mandelbrot(gfx, 1000, 600, 600, new CR_classic_bluescale_square()); repaint(); sleep(1000);
+		System.out.println("mandelbrot, CR_classic_boundary");
                 mandelbrot(gfx, 1000, 600, 600, new CR_classic_boundary()); repaint(); sleep(1000);
+		System.out.println("mandelbrot, CR_classic_hsv_hue_simple");
                 mandelbrot(gfx, 1000, 600, 600, new CR_classic_hsv_hue_simple()); repaint(); sleep(1000);
+		System.out.println("mandelbrot, CR_classic_hsv_hue_value");
                 mandelbrot(gfx, 1000, 600, 600, new CR_classic_hsv_value(0.567, 0.877)); repaint(); sleep(1000);
 
-
+		System.out.println("Julia set");
                 // just a julia set of some sort.. nice ones: (1, 0),
                 classic(gfx, 1000, 600, 600, new Complex(1, 0), 
                         new Complex(-2.25, -1.25), new Complex(0.75, 1.25),
@@ -413,6 +424,8 @@ while (true)
                 // run z <- z^n + c
 
 
+		System.out.println("z^n");
+
                 // when n = 1, it looks much more better with CR_classic()
                 zn(gfx, 1000, 600, 600, new Complex(0, 0),
                         new Complex(-3, -3), new Complex(3, 3),
@@ -421,6 +434,7 @@ while (true)
 
 
                 for (int i = 2; i < 10; i++) {
+			System.out.println("z^n, n = " + i);
 
                         zn(gfx, 1000, 600, 600, new Complex(0, 0),
                                 new Complex(-3, -3), new Complex(3, 3),
