@@ -146,7 +146,7 @@ void analyse(FILE *fpoutput, FileInfo &fileinfo)
 		fprintf(fpoutput, "%02x", sha1digest[i]);
 	}
 
-	fprintf(fpoutput, " - %s\n", fileinfo.fullpathname);
+	fprintf(fpoutput, " %s\n", fileinfo.fullpathname);
 
 	fclose(fp);
 
