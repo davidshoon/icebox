@@ -1,3 +1,12 @@
+/*
+	Recursive SHA1 sum -- for de-duplication list output.
+
+	NB: This program is obsolete. Use the SHA256 version instead, as it requires lower memory overhead.
+
+	by David Shoon
+
+*/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

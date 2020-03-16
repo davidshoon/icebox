@@ -1,3 +1,10 @@
+/*
+
+	Recursive SHA256 sum. For outputting to a list for de-duplication of files.
+
+	By David Shoon.
+*/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

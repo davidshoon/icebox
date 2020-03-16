@@ -1,3 +1,13 @@
+/*
+	Delete and symlink duplicate files from recursive_shasum output.
+
+	(This program does a de-duplication of files.)
+
+	By David Shoon
+
+*/
+
+
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -72,8 +82,12 @@ int main(int argc, char **argv)
 		else {
 			printf("SYMLINKING %s %s\n", hashes[i].hash.c_str(), hashes[i].filepath.c_str());
 
-			unlink(hashes[i].filepath.c_str());
-			symlink(matching_hash.filepath.c_str(), hashes[i].filepath.c_str());
+			/* NB: If you want to see what this program does without it actually doing any deletion/symlinking,
+			comment the two lines below */
+
+			if (unlink(hashes[i].filepath.c_str()) < 0) { perror("unlink"); exit(1); }
+
+			if (symlink(matching_hash.filepath.c_str(), hashes[i].filepath.c_str()) < 0) { perror("symlink"); exit(1); }
 		}
 	}
 }

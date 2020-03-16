@@ -1,3 +1,11 @@
+/* 
+	Print duplicate files from recursive sha sum output.
+
+	This program is obsolete.
+
+	By David Shoon
+*/
+
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
