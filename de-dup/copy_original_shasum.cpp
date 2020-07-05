@@ -4,19 +4,6 @@
 		- Copy original-only files to specified directory (makes sub-directories if sub-directory doesn't exist).
 
 		- Symlink duplicates -- relative to specified directory
-			- i.e. if original = /test/sub1/blah
-			- and duplicate is /test/sub2/blah2
-			- and specified directory is /foo
-			- then, /foo/test/sub1/blah is original, and /foo/test/sub2/blah2 (after mkdir /foo/test/sub2) points to ../sub1/blah
-				- this requires tricky manipulation of specified directory, cause /foo/sub1 is the original's directory, and /foo/sub2 is the duplicate's directory.
-				- i.e. original /test/sub1/blah, duplicate is /test/sub2/blah2, specified directory is /foo/
-					- first figure out blah2 is to blah, i.e. find out to traverse paths to get to blah, from blah2.
-
-					OR
-
-					- easier way is to just put "../" until the paths lead to /, append "/foo/test/sub1" 
-						- i.e. first "../" goes to "/test", then "../../" goes to "/", then "../../foo/test/sub1" goes to the right directory.
-
 
 	By David Shoon
 
@@ -91,7 +78,6 @@ void copy_file(const char *source_filename, const char *destination_directory)
 	int total;
 
 	std::string outfilepathname = destination_directory;
-//	outfilepathname += "/"; // not necessary, as source_filename (should) have a leading "/"
 	outfilepathname += source_filename;
 
 	printf("COPYING ORIGINAL: %s\n", source_filename);
@@ -133,7 +119,6 @@ void copy_file(const char *source_filename, const char *destination_directory)
 void make_symlink(const char *original_filename, const char *duplicate_filename, const char *destination_directory)
 {
 	std::string outfilepathname = destination_directory;
-//	outfilepathname += "/";	// not necessary, as duplicate_filename should have a leading "/"
 	outfilepathname += duplicate_filename;
 
 	make_path(outfilepathname);
@@ -150,11 +135,13 @@ void make_symlink(const char *original_filename, const char *duplicate_filename,
 
 		*p = '\0';
 
-		recursive_dotdot += "../";
+		// [2] - This code here is to prevent "one too many ../"
+		if (strrchr(filepath, '/') != NULL) {
+			recursive_dotdot += "../";	// [1] - previously, this causes one too many "../" relative paths... so we must prevent that...
+		}
 	}
 
-	recursive_dotdot += destination_directory;
-//	recursive_dotdot += "/"; // not necessary, as original_filename should have a leading "/"
+	recursive_dotdot.pop_back();	// delete last "/" from "../", since original_filename (should) include a leading "/"
 	recursive_dotdot += original_filename;
 
 	printf("Making symlink: ORIGINAL [%s], DUPLICATE [%s]\n", recursive_dotdot.c_str(), outfilepathname.c_str());
