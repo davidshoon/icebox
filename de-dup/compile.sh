@@ -6,3 +6,5 @@ g++ -o delete_and_symlink_dup_shasum.out delete_and_symlink_dup_shasum.cpp
 
 g++ -o list_dup_shasum.out list_dup_shasum.cpp
 
+g++ -g -o copy_original_shasum.out copy_original_shasum.cpp
+
