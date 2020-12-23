@@ -202,6 +202,7 @@ void analyse_file(const char *filename, uint32_t xorsize, char *xor, uint32_t nu
 	// calculate a fix for the damaged block, xor_except_damaged_block will now contain the fixed data.
 	for (index = 0; index < xorsize; index++) {
 		xor_except_damaged_block[index] ^= xor[index];
+		fprintf(stderr, "%c", xor_except_damaged_block[index]);
 	}
 
 	rewind(fp);
