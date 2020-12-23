@@ -77,6 +77,69 @@ void load_xor_file(const char *filename, uint32_t *xorsize, char **xor, uint32_t
 	return;
 }
 
+void analyse_file(const char *filename, uint32_t xorsize, char *xor, uint32_t num_checksums, uint32_t *checksums)
+{
+	FILE *fp;
+	size_t r;
+	char *buf;
+	size_t i;
+	uint32_t checksum;
+	uint32_t checksum_index;
+	uint32_t *checksum_errors;
+	uint32_t num_actual_errors;
+
+	buf = malloc(xorsize);
+	if (!buf) {
+		fprintf(stderr, "Unable to allocate memory\n");
+		exit(7);
+	}
+
+	checksum_errors = calloc(num_checksums, sizeof(uint32_t));
+	if (!checksum_errors) {
+		fprintf(stderr, "Unable to allocate memory\n");
+		exit(7);
+	}
+
+	fp = fopen(filename, "r+");
+	if (!fp) {
+		perror("fopen");
+		exit(7);
+	}
+
+	fprintf(stderr, "First pass... analysing checksums...\n");
+
+	checksum_index = 0;
+	num_actual_errors = 0;
+
+	while ((r = fread(buf, 1, xorsize, fp))) {
+		checksum = 0;
+		for (i = 0; i < r; i++) {
+			checksum += buf[i];
+		}
+
+		checksum_errors[checksum_index] = checksum;
+
+		if (checksum != checksums[checksum_index]) {
+			fprintf(stderr, "Found error in block: %d\n", checksum_index);
+			num_actual_errors++;
+
+			if (num_actual_errors > 1) {
+				char str[1024];
+
+				fprintf(stderr, "We can't fix this file, since number of error blocks exceeds 1 (currently: %d blocks bad).\n", num_actual_errors);
+				fprintf(stderr, "Continue scanning anyway? (y/n) ");
+				scanf("%s", str);
+				if (str[0] != 'y') {
+					break;
+				}
+			}
+		}
+
+		checksum_index++;
+	}
+
+	return;
+}
 
 int main(int argc, char **argv)
 {
@@ -92,6 +155,8 @@ int main(int argc, char **argv)
 	}
 
 	load_xor_file(argv[1], &xorsize, &xor, &num_checksums, &checksums);
+
+	analyse_file(argv[2], xorsize, xor, num_checksums, checksums);
 
 	return 0;
 }
