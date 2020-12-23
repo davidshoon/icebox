@@ -208,6 +208,7 @@ void analyse_file(const char *filename, uint32_t xorsize, char *xor, uint32_t nu
 	fseek(fp, first_error_index * xorsize, SEEK_SET);
 
 	if (first_error_index == checksum_index) {
+		fprintf(stderr, "Writing the last block... this may be less than a full xorblock size\n");
 		i = fwrite(xor_except_damaged_block, r, 1, fp);
 	}
 
@@ -219,6 +220,8 @@ void analyse_file(const char *filename, uint32_t xorsize, char *xor, uint32_t nu
 		fprintf(stderr, "ERROR!!!! Can't write out fixed damaged block! File is now corrupted!\n");
 		exit(10);
 	}
+
+	fprintf(stderr, "Successfully fixed error\n");
 
 	return;
 }
