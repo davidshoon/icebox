@@ -58,6 +58,8 @@ int main(int argc, char **argv)
 
 	total = atoi(argv[2]);
 
+	fprintf(stderr, "Total xor block size: %d\n", total);
+
 	buf = malloc(total);
 	xor = malloc(total);
 

@@ -30,7 +30,7 @@ void load_xor_file(const char *filename, uint32_t *xorsize, char **xor, uint32_t
 
 	r = fread(xorsize, sizeof(*xorsize), 1, fp);
 	if (r == 0) {
-		perror("fread");
+		perror("fread xorsize");
 		exit(3);
 	}
 
@@ -38,7 +38,7 @@ void load_xor_file(const char *filename, uint32_t *xorsize, char **xor, uint32_t
 
 	r = fread(num_checksums, sizeof(*num_checksums), 1, fp);
 	if (r == 0) {
-		perror("fread");
+		perror("fread num_checksums");
 		exit(4);
 	}
 
@@ -53,7 +53,7 @@ void load_xor_file(const char *filename, uint32_t *xorsize, char **xor, uint32_t
 
 	for (i = 0; i < *num_checksums; i++) {
 		if (fread(&checksum, sizeof(checksum), 1, fp) == 0) {
-			perror("fread");
+			perror("fread checksums");
 			exit(5);
 		}
 
@@ -69,8 +69,8 @@ void load_xor_file(const char *filename, uint32_t *xorsize, char **xor, uint32_t
 
 	// Read xor block from file.
 
-	if (fread(xor, *xorsize, 1, fp) == 0) {
-		perror("fread");
+	if (fread(*xor, *xorsize, 1, fp) == 0) {
+		perror("fread xor");
 		exit(6);
 	}
 
@@ -133,6 +133,10 @@ void analyse_file(const char *filename, uint32_t xorsize, char *xor, uint32_t nu
 					break;
 				}
 			}
+		}
+
+		if (r < xorsize) {
+			break;
 		}
 
 		checksum_index++;
