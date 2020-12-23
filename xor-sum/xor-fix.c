@@ -207,6 +207,8 @@ void analyse_file(const char *filename, uint32_t xorsize, char *xor, uint32_t nu
 		fprintf(stderr, "%c", xor_except_damaged_block[index]);
 	}
 
+	fprintf(stderr, "\n====\n");
+
 	fclose(fp);
 
 	// Fixing...
@@ -214,7 +216,7 @@ void analyse_file(const char *filename, uint32_t xorsize, char *xor, uint32_t nu
 	{
 		char str[1024];
 		fprintf(stderr, "Continue? (y/n)\n");
-		if ((scanf("%s", str) != 0) || (str[0] == 'y')) {
+		if ((scanf("%s", str) != 0) && (str[0] == 'y')) {
 			// ok, continue..
 		}
 		else {
