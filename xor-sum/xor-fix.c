@@ -74,6 +74,8 @@ void load_xor_file(const char *filename, uint32_t *xorsize, char **xor, uint32_t
 		exit(6);
 	}
 
+	fclose(fp);
+
 	return;
 }
 
