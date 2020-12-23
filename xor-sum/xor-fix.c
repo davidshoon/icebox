@@ -88,6 +88,12 @@ void analyse_file(const char *filename, uint32_t xorsize, char *xor, uint32_t nu
 	uint32_t *checksum_errors;
 	uint32_t num_actual_errors;
 
+	// for second pass
+	uint32_t first_error_index;
+	char *xor_except_damaged_block;
+	uint32_t index;
+
+
 	buf = malloc(xorsize);
 	if (!buf) {
 		fprintf(stderr, "Unable to allocate memory\n");
@@ -139,6 +145,79 @@ void analyse_file(const char *filename, uint32_t xorsize, char *xor, uint32_t nu
 		}
 
 		checksum_index++;
+	}
+
+	if (num_actual_errors == 0) {
+		fprintf(stderr, "Congratulations, no errors found\n");
+		exit(0);
+	}
+
+	if (num_actual_errors > 1) {
+		fprintf(stderr, "Unable to fix errors due to them exceeding 1 block size\n");
+		exit(8);
+	}
+
+	for (first_error_index = 0; first_error_index < checksum_index; first_error_index++) {
+		if (checksum_errors[i] != checksums[i]) {
+			break;
+		}
+	}
+
+	fprintf(stderr, "Second pass... calculating correct data for block: %d\n", first_error_index);
+
+
+	xor_except_damaged_block = malloc(xorsize);
+
+	if (!xor_except_damaged_block) {
+		fprintf(stderr, "Unable to allocate memory\n");
+		exit(9);
+	}
+
+	memset(xor_except_damaged_block, 0, xorsize);
+	rewind(fp);
+
+	// xor all blocks, except the damaged block
+	for (i = 0; i < checksum_index; i++) {
+		r = fread(buf, 1, xorsize, fp);
+		if (r != 0) {
+			if (i != first_error_index) { // avoid xoring the damaged block
+				for (index = 0; index < r; index++) {
+					xor_except_damaged_block[index] ^= buf[index];
+				}
+			}
+
+			if (r < xorsize) {
+				i++; // increment i before breaking... so it's the same as if the loop terminated normally
+				break;
+			}
+		}
+	}
+
+	// sanity check
+	if (i != checksum_index) {
+		fprintf(stderr, "Sanity check: i != checksum_index failed... aborting...\n");
+		abort();
+	}
+
+	// calculate a fix for the damaged block, xor_except_damaged_block will now contain the fixed data.
+	for (index = 0; index < xorsize; index++) {
+		xor_except_damaged_block[index] ^= xor[index];
+	}
+
+	rewind(fp);
+	fseek(fp, first_error_index * xorsize, SEEK_SET);
+
+	if (first_error_index == checksum_index) {
+		i = fwrite(xor_except_damaged_block, r, 1, fp);
+	}
+
+	else {
+		i = fwrite(xor_except_damaged_block, xorsize, 1, fp);
+	}
+
+	if (i == 0) {
+		fprintf(stderr, "ERROR!!!! Can't write out fixed damaged block! File is now corrupted!\n");
+		exit(10);
 	}
 
 	return;
