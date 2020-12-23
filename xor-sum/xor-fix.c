@@ -158,7 +158,7 @@ void analyse_file(const char *filename, uint32_t xorsize, char *xor, uint32_t nu
 	}
 
 	for (first_error_index = 0; first_error_index < checksum_index; first_error_index++) {
-		if (checksum_errors[i] != checksums[i]) {
+		if (checksum_errors[first_error_index] != checksums[first_error_index]) {
 			break;
 		}
 	}
