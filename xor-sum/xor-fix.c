@@ -108,7 +108,7 @@ void analyse_file(const char *filename, uint32_t xorsize, char *xor, uint32_t nu
 		exit(7);
 	}
 
-	fp = fopen(filename, "r+");
+	fp = fopen(filename, "rb");
 	if (!fp) {
 		perror("fopen");
 		exit(7);
@@ -205,6 +205,27 @@ void analyse_file(const char *filename, uint32_t xorsize, char *xor, uint32_t nu
 	for (index = 0; index < xorsize; index++) {
 		xor_except_damaged_block[index] ^= xor[index];
 		fprintf(stderr, "%c", xor_except_damaged_block[index]);
+	}
+
+	fclose(fp);
+
+	// Fixing...
+	fprintf(stderr, "Fixing...\n");
+	{
+		char str[1024];
+		fprintf(stderr, "Continue? (y/n)\n");
+		if ((scanf("%s", str) != 0) || (str[0] == 'y')) {
+			// ok, continue..
+		}
+		else {
+			fprintf(stderr, "Finishing up...\n");
+			exit(0);
+		}
+	}
+
+	fp = fopen(filename, "r+b");
+	if (!fp) {
+		perror("fopen");
 	}
 
 	rewind(fp);
