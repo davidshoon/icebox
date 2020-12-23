@@ -128,8 +128,7 @@ void analyse_file(const char *filename, uint32_t xorsize, char *xor, uint32_t nu
 
 				fprintf(stderr, "We can't fix this file, since number of error blocks exceeds 1 (currently: %d blocks bad).\n", num_actual_errors);
 				fprintf(stderr, "Continue scanning anyway? (y/n) ");
-				scanf("%s", str);
-				if (str[0] != 'y') {
+				if ((scanf("%s", str) != 0) && (str[0] != 'y')) {
 					break;
 				}
 			}
