@@ -15,11 +15,12 @@ struct checksum_list
 {
 	struct checksum_list *next;
 	uint32_t checksum;
+	uint64_t length;
 };
 
 struct checksum_list g_checksum_list; // dummy root node linked list.
 
-struct checksum_list *add_checksum(struct checksum_list *curr, uint32_t checksum)
+struct checksum_list *add_checksum(struct checksum_list *curr, uint32_t checksum, uint64_t length)
 {
 	curr->next = malloc(sizeof(struct checksum_list));
 
@@ -30,6 +31,7 @@ struct checksum_list *add_checksum(struct checksum_list *curr, uint32_t checksum
 
 	curr->next->next = NULL;
 	curr->next->checksum = checksum;
+	curr->next->length = length;
 
 	return curr->next;
 }
@@ -43,6 +45,7 @@ int main(int argc, char **argv)
 	size_t i, r;
 	uint32_t checksum;
 	struct checksum_list *p_checksum_list = &g_checksum_list;
+	uint64_t length;
 
 	if (argc < 3) {
 		fprintf(stderr, "Usage: %s <file> <size of xor>\n", argv[0]);
@@ -83,7 +86,7 @@ int main(int argc, char **argv)
 			checksum += buf[i]; // our checksum.
 		}
 
-		p_checksum_list = add_checksum(p_checksum_list, checksum);
+		p_checksum_list = add_checksum(p_checksum_list, checksum, r);
 
 		if (r < total) {
 			fprintf(stderr, "Finished\n");
@@ -100,7 +103,9 @@ int main(int argc, char **argv)
 
 	for (p_checksum_list = g_checksum_list.next; p_checksum_list != NULL; p_checksum_list = p_checksum_list->next) {
 		checksum = p_checksum_list->checksum;
+		length = p_checksum_list->length;
 		fwrite(&checksum, sizeof(checksum), 1, stdout); // write out checksum for each block
+		fwrite(&length, sizeof(length), 1, stdout); // write out length for each block
 	}
 
 
