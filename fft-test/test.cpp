@@ -84,7 +84,7 @@ void dft(vector <T> & W, unsigned int N, vector <T> & x)
 	for (unsigned int j = 0; j < N; j++) {
 		T sum(0.0, 0.0);
 		for (unsigned int i = 0; i < N; i++) {
-			sum += x[i] * W[(i * j) / N];
+			sum += x[i] * exp(std::complex<double> (0.0, -1.0) * 2.0 * M_PI * (double) i * (double) j / (double) N);
 		}
 
 		result.push_back(sum);
