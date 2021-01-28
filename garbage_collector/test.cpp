@@ -42,7 +42,7 @@ void heap_mark(std::map <void *, size_t>::iterator it)
 {
 	marked_allocations.insert(it->first);
 
-	int *ptr = (int *) it->first;
+	long *ptr = (long *) it->first;
 
 	for (long i = 0; i * sizeof(long) < it->second; i++) {
 		auto it = heap_allocations.find(reinterpret_cast <void *> (ptr[i]));
@@ -55,12 +55,10 @@ void heap_mark(std::map <void *, size_t>::iterator it)
 void stack_mark()
 {
 	long esp = (long) &esp;
-//	int *ptr = (int *) esp;
 	long *ptr = (long *) esp;
 
 	marked_allocations.clear();
 
-//	for (long i = 0; ptr[i] != 0xdeadbeef; i++) {
 	for (long i = 0; ptr[i] != 0xc001cafedeadbeef; i++) {
 		auto it = heap_allocations.find(reinterpret_cast <void *> (ptr[i]));
 		if (it != heap_allocations.end()) {
