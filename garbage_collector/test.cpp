@@ -47,7 +47,10 @@ void heap_mark(std::map <void *, size_t>::iterator it)
 	for (long i = 0; i * sizeof(long) < it->second; i++) {
 		auto it = heap_allocations.find(reinterpret_cast <void *> (ptr[i]));
 		if (it != heap_allocations.end()) {
-			heap_mark(it);
+			auto jt = marked_allocations.find(reinterpret_cast <void *> (ptr[i]));
+			if (jt == marked_allocations.end()) {
+				heap_mark(it);
+			}
 		}
 	}
 }
@@ -81,11 +84,14 @@ void func()
 	};
 
 	struct foo *f = (struct foo *) my_malloc(sizeof(struct foo));
+	struct foo *root = f;
 
 	for (int i = 0; i < 10; i++) {
 		f->next = (struct foo *) my_malloc(sizeof(struct foo));
 		f = f->next;
 	}
+
+	f->next = root;
 }
 
 int main()
