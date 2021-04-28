@@ -4,6 +4,7 @@
 
 #include <map>
 #include <set>
+#include <list>
 
 std::map <void *, size_t> heap_allocations;
 std::set <void *> marked_allocations;
@@ -30,10 +31,18 @@ void my_free(void *ptr)
 
 void sweep()
 {
-	for (auto x : heap_allocations) {
+	auto heap_next = heap_allocations.begin();
+
+	for (auto heap_it = heap_allocations.begin(); heap_it != heap_allocations.end(); heap_it = heap_next) {
+		auto x = *heap_it;
 		auto it = marked_allocations.find(x.first);
 		if (it == marked_allocations.end()) {
+			heap_next++;
+			heap_allocations.erase(heap_it);
 			my_free(x.first);
+		}
+		else {
+			heap_next++;
 		}
 	}
 }
@@ -103,4 +112,5 @@ int main()
 	}
 
 	gc();
+	gc(); // call it twice to prove that there's no problems with freeing ... should do nothing on this round.
 }
