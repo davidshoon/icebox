@@ -2,7 +2,20 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include <stddef.h>
+#include <stdint.h>
+
+#include <sys/mman.h>
 #include <unistd.h>
+
+// This struct should be the same as in wrapper.c for testing purposes only.
+struct chunk_header
+{
+	void *start_of_chunk;
+	size_t chunk_size;
+	void *fence;
+	size_t size;
+} __attribute__((packed));
 
 void do_something(char *p)
 {
@@ -41,9 +54,9 @@ void test_crash()
 
 void test_alloc()
 {
-	char *p = malloc(1024*1024);
+	char *p = malloc(sysconf(_SC_PAGE_SIZE) - sizeof(struct chunk_header) );
 
-	memset(p, 0, 1024*1024);
+	memset(p, 0, sysconf(_SC_PAGE_SIZE) - sizeof(struct chunk_header));
 
 	free(p);
 }

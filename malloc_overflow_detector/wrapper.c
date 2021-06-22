@@ -11,6 +11,7 @@
 struct chunk_header
 {
 	void *start_of_chunk;
+	size_t chunk_size;
 	void *fence;
 	size_t size;
 } __attribute__((packed));
@@ -32,7 +33,6 @@ static void *my_malloc(size_t size)
 	write(1, "my_malloc begin\n", strlen("my_malloc begin\n"));
 
 	size_t alloc_size = size + sizeof(struct chunk_header);
-
 	size_t pages = alloc_size / pagesize;
 	size_t pagesremainder = alloc_size % pagesize;
 
@@ -48,13 +48,26 @@ static void *my_malloc(size_t size)
 		abort();
 	}
 
+	if (pagesremainder == 0) {
+		header = (struct chunk_header *) ((char *) p);
+	}
 
-	header = (struct chunk_header *) ((char *) p + pagesize - pagesremainder);
+	else {
+		header = (struct chunk_header *) ((char *) p + pagesize - pagesremainder);
+	}
+
 	header->start_of_chunk = p;
+	header->chunk_size = pages * pagesize;
 	header->fence = (char *) p + pagesize * (pages - 1);
 	header->size = size;
 
-	p = (char *) p + sizeof(struct chunk_header) + (pagesize - pagesremainder);
+	if (pagesremainder == 0) {
+		p = (char *) p + sizeof(struct chunk_header);
+	}
+
+	else {
+		p = (char *) p + sizeof(struct chunk_header) + (pagesize - pagesremainder);
+	}
 
 	if (mprotect(header->fence, pagesize, PROT_READ) == -1) {
 		perror("mprotect");
@@ -72,7 +85,7 @@ static void my_free(void *ptr)
 
 	write(1, "my_free begin\n", strlen("my_free begin\n"));
 
-	if (munmap(header->start_of_chunk, header->size) < 0) {
+	if (munmap(header->start_of_chunk, header->chunk_size) < 0) {
 		abort();
 	}
 
